@@ -57,7 +57,29 @@ inquirer.prompt([{
                     console.log("Your total is: " + price + " Dollars please!")
                 }
                 createTotal();
-                checkAvaliability();
+                
+
+                function changeInventory() {
+                            console.log("Changing inventory in the database!\n");
+                            connection.query(
+                                "UPDATE products SET ? WHERE ?",
+                                [{
+                                        stock_quantity: itemsLeft
+                                    },
+                                    {
+                                        item_id: employeeResponse.id
+                                    },
+                                    function (err, res) {
+                                        if (err) {
+                                            throw err
+                                        }
+                                        console.log(res.affectedRows + " Product updated in the system!\n")
+                                    }
+                                ]
+                            )
+                        }
+                        changeInventory();
+
             }
 
         }
