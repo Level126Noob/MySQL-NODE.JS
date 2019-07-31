@@ -41,21 +41,14 @@ inquirer.prompt([{
                 " || stock_quantity: " + res[i].stock_quantity
             )
 
-
-            if (res[i].stock_quantity < employeeResponse.amount) {
-                console.log("Sorry we don't have that many items in stock!")
-            } else {
-                var itemsLeft = res[i].stock_quantity - employeeResponse.amount
-                console.log(itemsLeft + " Items remaining!...\n")
+            if (res[i].stock_quantity === 0 || null) {
+                deleteInventory();
             }
-
 
             function createTotal() {
                 var price = res[i].price * employeeResponse.amount
                 console.log("Your total is: " + price + " Dollars please!")
             }
-            createTotal();
-
 
             function changeInventory() {
                 console.log("Changing inventory in the database!\n");
@@ -76,8 +69,16 @@ inquirer.prompt([{
                     ]
                 )
             }
-            changeInventory();
 
+
+            if (res[i].stock_quantity < employeeResponse.amount) {
+                console.log("Sorry we don't have that many items in stock, try buying a little less!")
+            } else {
+                var itemsLeft = res[i].stock_quantity - employeeResponse.amount
+                console.log(itemsLeft + " Items remaining!...\n")
+                createTotal();
+                changeInventory();
+            }
         }
 
     })
@@ -92,32 +93,8 @@ inquirer.prompt([{
                 if (err) {
                     throw err
                 }
-                console.log(res.affectedRows + "Products deleted from database!\n");
+                console.log(res.affectedRows + " Products deleted from database!\n");
             }
         )
     }
-
-
-
-    function checkAvaliability() {
-        console.log("Checking if product is avaliable...\n");
-        connection.query(
-            "SELECT stock_quantity FROM products WHERE ?", {
-                item_id: employeeResponse.id,
-            },
-
-            function (err, res) {
-                if (err) {
-                    throw err;
-                }
-                console.log(res);
-                if (res < employeeResponse.amount) {
-                    console.log("Sorry, we don't have enough product for you!")
-                    deleteInventory();
-                }
-            }
-        )
-    }
-
-    checkAvaliability();
 });
